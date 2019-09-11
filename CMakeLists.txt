@@ -14,9 +14,11 @@ add_library(flecs_shared SHARED ${flecs_SRC})
 target_compile_definitions(flecs_static PRIVATE FLECS_STATIC)
 
 if(MSVC)
-  add_compile_options(/W4 /WX)
+    target_compile_options(flecs_static /W4 /WX)
+    target_compile_options(flecs_shared /W4 /WX)
 else()
-  add_compile_options(-Wall -Wextra -pedantic -Werror)
+    target_compile_options(flecs_static -Wall -Wextra -pedantic -Werror)
+    target_compile_options(flecs_shared -Wall -Wextra -pedantic -Werror)
 endif()
 
 install(
