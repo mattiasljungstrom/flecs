@@ -12,9 +12,9 @@ jobs:
     - name: Windows VS2017
       run: |
         cmake --version
-        mkdir build
-        cd build
-        cmake ..
+        mkdir build64
+        cd build64
+        cmake -G "Visual Studio 15 2017 Win64" ..
         dir
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && msbuild.exe flecs.sln /p:CL_MPCount=2
   mac:
