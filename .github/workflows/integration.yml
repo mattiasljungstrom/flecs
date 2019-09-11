@@ -16,8 +16,7 @@ jobs:
         cd build
         cmake ..
         dir
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && msbuild.exe flecs.sln /p:Configuration=Debug /p:CL_MPCount=2
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && msbuild.exe flecs.sln /p:Configuration=Release /p:CL_MPCount=2
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && msbuild.exe flecs.sln /p:CL_MPCount=2
   mac:
     runs-on: macOS-10.14
     strategy:
