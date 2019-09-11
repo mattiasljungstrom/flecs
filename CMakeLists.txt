@@ -13,6 +13,11 @@ add_library(flecs_shared SHARED ${flecs_SRC})
 
 target_compile_definitions(flecs_static PRIVATE FLECS_STATIC)
 
+if(MSVC)
+  add_compile_options(/W4 /WX)
+else()
+  add_compile_options(-Wall -Wextra -pedantic -Werror)
+endif()
 
 install(
 	DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include FILES_MATCHING PATTERN "*.h"
