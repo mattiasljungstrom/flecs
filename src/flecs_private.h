@@ -194,7 +194,7 @@ ecs_table_column_t *ecs_table_get_columns(
 void ecs_table_register_system(
     ecs_world_t *world,
     ecs_table_t *table,
-    ecs_entity_t system);    
+    ecs_entity_t system);
 
 /* Insert row into table (or stage) */
 uint32_t ecs_table_insert(
@@ -218,7 +218,7 @@ int16_t ecs_table_dim(
     uint32_t count);
 
 /* Return number of entities in table */
-uint64_t ecs_table_count(
+uint32_t ecs_table_count(
     ecs_table_t *table);
 
 /* Return size of table row */
@@ -227,7 +227,7 @@ uint32_t ecs_table_row_size(
 
 /* Return size of table row */
 uint32_t ecs_table_rows_dimensioned(
-    ecs_table_t *table);    
+    ecs_table_t *table);
 
 /* Delete row from table */
 void ecs_table_delete(

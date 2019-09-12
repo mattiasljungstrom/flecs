@@ -126,8 +126,8 @@ void add_table(
         ecs_system_expr_oper_kind_t oper_kind = column->oper_kind;
 
         /* Column that retrieves data from self or a fixed entity */
-        if (kind == EcsFromSelf || kind == EcsFromEntity || 
-            kind == EcsFromOwned || kind == EcsFromShared) 
+        if (kind == EcsFromSelf || kind == EcsFromEntity ||
+            kind == EcsFromOwned || kind == EcsFromShared)
         {
             if (oper_kind == EcsOperAnd || oper_kind == EcsOperNot) {
                 component = column->is.component;
@@ -136,7 +136,7 @@ void add_table(
                 component = column->is.component;
             } else if (oper_kind == EcsOperOr) {
                 component = ecs_type_contains(
-                    world, table_type, column->is.type, 
+                    world, table_type, column->is.type,
                     false, true);
             }
 
@@ -198,7 +198,7 @@ void add_table(
                         table_data->columns[c] = 0;
                     }
                 }
-                
+
                 /* ecs_table_column_offset may return -1 if the component comes
                  * from a prefab. If so, the component will be resolved as a
                  * reference (see below) */
@@ -216,15 +216,15 @@ void add_table(
 
         /* Check if a the component is a reference. If 'entity' is set, the
          * component must be resolved from another entity, which is the case
-         * for FromEntity and FromContainer. 
-         * 
+         * for FromEntity and FromContainer.
+         *
          * If no entity is set but the component is not found in the table, it
          * must come from a prefab. This is guaranteed, as at this point it is
          * already validated that the table matches with the system.
-         * 
+         *
          * If the column kind is FromSingleton, the entity will be 0, but still
          * a reference needs to be added to the singleton component.
-         * 
+         *
          * If the column kind is Cascade, there may not be an entity in case the
          * current table contains root entities. In that case, still add a
          * reference field. The application can, after the table has matched,
@@ -236,7 +236,7 @@ void add_table(
             if (ecs_has(world, component, EcsComponent)) {
                 EcsComponent *component_data = ecs_get_ptr(
                         world, component, EcsComponent);
-                
+
                 if (component_data->size) {
                     ecs_entity_t e;
                     ecs_reference_t *ref = ecs_vector_add(
@@ -260,25 +260,25 @@ void add_table(
 
                     ref->entity = e;
                     ref->component = component;
-                    
+
                     if (e != ECS_INVALID_ENTITY) {
                         ecs_entity_info_t info = {.entity = e};
 
                         ref->cached_ptr = ecs_get_ptr_intern(
-                            world, 
+                            world,
                             &world->main_stage,
                             &info,
                             component,
                             false,
                             true);
 
-                        ecs_set_watch(world, &world->main_stage, e);                     
+                        ecs_set_watch(world, &world->main_stage, e);
                     } else {
                         ref->cached_ptr = NULL;
                     }
 
                     /* Negative number indicates ref instead of offset to ecs_data */
-                    table_data->columns[c] = -ecs_vector_count(table_data->references);
+                    table_data->columns[c] = -(int32_t)ecs_vector_count(table_data->references);
                     system_data->base.has_refs = true;
                 }
             }
@@ -348,7 +348,7 @@ bool match_table(
         world, table_type, type, true, false))
     {
         return false;
-    }  
+    }
 
     /* Test if table has SHARED columns in shared components */
     type = system_data->base.and_from_shared;
@@ -375,8 +375,8 @@ bool match_table(
         ecs_system_expr_oper_kind_t oper_kind = elem->oper_kind;
 
         if (oper_kind == EcsOperAnd) {
-            if (elem_kind == EcsFromSelf || elem_kind == EcsFromOwned || 
-                elem_kind == EcsFromShared) 
+            if (elem_kind == EcsFromSelf || elem_kind == EcsFromOwned ||
+                elem_kind == EcsFromShared)
             {
                 /* Already validated */
             } else if (elem_kind == EcsFromContainer) {
@@ -434,7 +434,7 @@ bool match_table(
         if (ecs_type_contains(world, table_type, type, false, true)) {
             return false;
         }
-    }        
+    }
 
     type = system_data->base.not_from_component;
     if (type && components_contains(
@@ -537,7 +537,7 @@ void resolve_cascade_container(
 {
     ecs_matched_table_t *table_data = ecs_vector_get(
         system_data->tables, &matched_table_params, table_data_index);
-    
+
     ecs_assert(table_data->references != 0, ECS_INTERNAL_ERROR, NULL);
 
     /* Obtain reference index */
@@ -548,13 +548,13 @@ void resolve_cascade_container(
     /* Obtain pointer to the reference data */
     ecs_reference_t *references = ecs_vector_first(table_data->references);
     ecs_reference_t *ref = &references[ref_index];
-    ecs_assert(ref->component == get_cascade_component(system_data), 
+    ecs_assert(ref->component == get_cascade_component(system_data),
         ECS_INTERNAL_ERROR, NULL);
 
     /* Resolve container entity */
     ecs_entity_t container = 0;
     ecs_components_contains_component(
-        world, table_type, ref->component, ECS_CHILDOF, &container);        
+        world, table_type, ref->component, ECS_CHILDOF, &container);
 
     /* If container was found, update the reference */
     if (container) {
@@ -594,8 +594,8 @@ void ecs_rematch_system(
                 }
 
             /* If table still matches and has cascade column, reevaluate the
-                * sources of references. This may have changed in case 
-                * components were added/removed to container entities */ 
+                * sources of references. This may have changed in case
+                * components were added/removed to container entities */
             } else if (system_data->base.cascade_by) {
                 resolve_cascade_container(
                     world, system_data, match, table->type);
@@ -616,7 +616,7 @@ void ecs_rematch_system(
         }
     }
 
-    /* If the system has a CASCADE column and modifications were made, 
+    /* If the system has a CASCADE column and modifications were made,
         * reorder the system tables so that the depth order is preserved */
     if (system_data->base.cascade_by) {
         order_cascade_tables(world, system_data);
@@ -651,7 +651,7 @@ void ecs_revalidate_system_refs(
             ecs_entity_info_t info = {.entity = ref.entity};
             refs[r].cached_ptr = ecs_get_ptr_intern(
                 world, &world->main_stage, &info, ref.component, false, true);
-        }            
+        }
     }
 }
 
@@ -805,7 +805,7 @@ ecs_entity_t ecs_new_col_system(
         if (kind == EcsOnUpdate) {
             elem = ecs_vector_add(&world->on_update_systems, &handle_arr_params);
         } else if (kind == EcsOnValidate) {
-            elem = ecs_vector_add(&world->on_validate_systems, &handle_arr_params);            
+            elem = ecs_vector_add(&world->on_validate_systems, &handle_arr_params);
         } else if (kind == EcsPreUpdate) {
             elem = ecs_vector_add(&world->pre_update_systems, &handle_arr_params);
         } else if (kind == EcsPostUpdate) {
@@ -813,7 +813,7 @@ ecs_entity_t ecs_new_col_system(
         } else if (kind == EcsOnLoad) {
             elem = ecs_vector_add(&world->on_load_systems, &handle_arr_params);
         } else if (kind == EcsPostLoad) {
-            elem = ecs_vector_add(&world->post_load_systems, &handle_arr_params);            
+            elem = ecs_vector_add(&world->post_load_systems, &handle_arr_params);
         } else if (kind == EcsPreStore) {
             elem = ecs_vector_add(&world->pre_store_systems, &handle_arr_params);
         } else if (kind == EcsOnStore) {
@@ -871,7 +871,7 @@ ecs_entity_t _ecs_run_w_filter(
     }
 
     ecs_entity_info_t sys_info = {.entity = system};
-    EcsColSystem *system_data = ecs_get_ptr_intern(real_world, &real_world->main_stage, 
+    EcsColSystem *system_data = ecs_get_ptr_intern(real_world, &real_world->main_stage,
         &sys_info, EEcsColSystem, false, false);
     assert(system_data != NULL);
 
@@ -969,9 +969,9 @@ ecs_entity_t _ecs_run_w_filter(
                 continue;
             }
 
-            ecs_entity_t *entity_buffer = 
+            ecs_entity_t *entity_buffer =
                     ecs_vector_first(table_data[0].data);
-            info.entities = &entity_buffer[first];            
+            info.entities = &entity_buffer[first];
         }
 
         if (table->references) {
@@ -986,7 +986,7 @@ ecs_entity_t _ecs_run_w_filter(
         info.components = table->components;
         info.offset = first;
         info.count = count;
-        
+
         action(&info);
 
         info.frame_offset += count;

@@ -39,7 +39,7 @@
 #define ECS_SYSTEM_INITIAL_TABLE_COUNT (0)
 #define ECS_MAX_JOBS_PER_WORKER (16)
 
-/* This is _not_ the max number of entities that can be of a given type. This 
+/* This is _not_ the max number of entities that can be of a given type. This
  * constant defines the maximum number of components, prefabs and parents can be
  * in one type. This limit serves two purposes: detect errors earlier (assert on
  * very large types) and allow for more efficient allocation strategies (like
@@ -66,12 +66,12 @@ typedef struct EcsTypeComponent {
  * prefab. This acts as a front-end for another mechanism, that ensures that
  * child entities for different prefab parents are added to different tables. As
  * a result of setting a parent in EcsPrefab, Flecs will:
- * 
+ *
  *  - Add the prefab to the entity type
  *  - Find or create a prefab parent flag entity
  *  - Set the EcsPrefabParent component on the prefab parent flag entity
  *  - Add the prefab parent flag entity to the child
- * 
+ *
  * The last step ensures that the type of the child entity is associated with at
  * most one prefab parent. If the mechanism would just rely on the EcsPrefab
  * parent field, it would theoretically be possible that childs for different
@@ -171,16 +171,16 @@ typedef struct EcsSystem {
     /* Precomputed types for quick comparisons */
     ecs_type_t not_from_self;      /* Exclude components from self */
     ecs_type_t not_from_owned;     /* Exclude components from self only if owned */
-    ecs_type_t not_from_shared;     /* Exclude components from self only if shared */
+    ecs_type_t not_from_shared;    /* Exclude components from self only if shared */
     ecs_type_t not_from_component; /* Exclude components from components */
     ecs_type_t and_from_self;      /* Which components are required from entity */
-    ecs_type_t and_from_owned;      /* Which components are required from entity */
-    ecs_type_t and_from_shared;      /* Which components are required from entity */
+    ecs_type_t and_from_owned;     /* Which components are required from entity */
+    ecs_type_t and_from_shared;    /* Which components are required from entity */
     ecs_type_t and_from_system;    /* Used to auto-add components to system */
-    
+
     int32_t cascade_by;            /* CASCADE column index */
     EcsSystemKind kind;            /* Kind of system */
-    double time_spent;              /* Time spent on running system */
+    double time_spent;             /* Time spent on running system */
     bool enabled;                  /* Is system enabled or not */
     bool has_refs;                 /* Does the system have reference columns */
     bool needs_tables;             /* Does the system need table matching */
@@ -191,40 +191,40 @@ typedef struct EcsSystem {
 /** A column system is a system that is ran periodically (default = every frame)
  * on all entities that match the system signature expression. Column systems
  * are prematched with tables (archetypes) that match the system signature
- * expression. Each time a column system is invoked, it iterates over the 
- * matched list of tables (the 'tables' member). 
+ * expression. Each time a column system is invoked, it iterates over the
+ * matched list of tables (the 'tables' member).
  *
  * For each table, the system stores a list of the components that were matched
  * with the system. This list may differ from the component list of the table,
  * when OR expressions or optional expressions are used.
- * 
+ *
  * A column system keeps track of tables that are empty. These tables are stored
  * in the 'inactive_tables' array. This prevents the system from iterating over
  * tables in the main loop that have no data.
- * 
+ *
  * For each table, a column system stores an index that translates between the
  * a column in the system signature, and the matched table. This information is
  * stored, alongside with an index that identifies the table, in the 'tables'
  * member. This is an array of an array of integers, per table.
- * 
+ *
  * Additionally, the 'tables' member contains information on where a component
  * should be fetched from. By default, components are fetched from an entity,
  * but a system may specify that a component must be resolved from a container,
  * or must be fetched from a prefab. In this case, the index to lookup a table
  * column from system column contains a negative number, which identifies an
  * element in the 'refs' array.
- * 
+ *
  * The 'refs' array contains elements of type 'EcsRef', and stores references
  * to external entities. References can vary per table, but not per entity/row,
- * as prefabs / containers are part of the entity type, which in turn 
+ * as prefabs / containers are part of the entity type, which in turn
  * identifies the table in which the entity is stored.
- * 
+ *
  * The 'period' and 'time_passed' members are used for periodic systems. An
- * application may specify that a system should only run at a specific interval, 
+ * application may specify that a system should only run at a specific interval,
  * like once per second. This interval is stored in the 'period' member. Each
- * time the system is evaluated but not ran, the delta_time is added to the 
+ * time the system is evaluated but not ran, the delta_time is added to the
  * time_passed member, until it exceeds 'period'. In that case, the system is
- * ran, and 'time_passed' is decreased by 'period'. 
+ * ran, and 'time_passed' is decreased by 'period'.
  */
 typedef struct EcsColSystem {
     EcsSystem base;
@@ -239,7 +239,7 @@ typedef struct EcsColSystem {
     float time_passed;                    /* Time passed since last invocation */
 } EcsColSystem;
 
-/** A row system is a system that is ran on 1..n entities for which a certain 
+/** A row system is a system that is ran on 1..n entities for which a certain
  * operation has been invoked. The system kind determines on what kind of
  * operation the row system is invoked. Example operations are ecs_add,
  * ecs_remove and ecs_set. */
@@ -247,9 +247,9 @@ typedef struct EcsRowSystem {
     EcsSystem base;
     ecs_vector_t *components;       /* Components in order of signature */
 } EcsRowSystem;
- 
+
 /** The ecs_row_t struct is a 64-bit value that describes in which table
- * (identified by a type) is stored, at which index. Entries in the 
+ * (identified by a type) is stored, at which index. Entries in the
  * world::entity_index are of type ecs_row_t. */
 typedef struct ecs_row_t {
     ecs_type_t type;              /* Identifies a type (and table) in world */
@@ -263,11 +263,11 @@ typedef struct ecs_row_t {
  * for quick lookups of types. A node represents a type, and its direct children
  * represent types with one additional entity. For example, given a node [A],
  * [A, B] would be a child node.
- * 
+ *
  * Child nodes are looked up directly using the entity id. For example, node [A]
- * will be stored at root.nodes[A]. Children entity ids are offset by their 
+ * will be stored at root.nodes[A]. Children entity ids are offset by their
  * parent, such that [A, B] is stored at root.nodes[A].nodes[B - A].
- * 
+ *
  * If the offset exceeds ECS_TYPE_DB_MAX_CHILD_NODES, the type will be stored in
  * the types map. This map is keyed by the hash of the type relative to its
  * parent. For example, the hash for type [A, B, C] will be computed on [B, C]
@@ -280,7 +280,7 @@ typedef struct ecs_type_link_t {
 typedef struct ecs_type_node_t {
     ecs_vector_t *nodes;    /* child nodes - <ecs_entity_t, ecs_type_node_t> */
     ecs_vector_t **types;   /* child types w/large entity offsets - <hash, vector<ecs_type_link_t>> */
-    ecs_type_link_t link;     
+    ecs_type_link_t link;
 } ecs_type_node_t;
 
 /** A stage is a data structure in which delta's are stored until it is safe to
@@ -289,8 +289,8 @@ typedef struct ecs_type_node_t {
  * iterating. Additionally, worker threads have their own stage that lets them
  * mutate the state of entities without requiring locks. */
 typedef struct ecs_stage_t {
-    /* If this is not main stage, 
-     * changes to the entity index 
+    /* If this is not main stage,
+     * changes to the entity index
      * are buffered here */
     ecs_map_t *entity_index;       /* Entity lookup table for (table, row) */
 
@@ -314,7 +314,7 @@ typedef struct ecs_stage_t {
     uint32_t commit_count;
     ecs_type_t from_type;
     ecs_type_t to_type;
-    
+
     /* Is entity range checking enabled? */
     bool range_check_enabled;
 } ecs_stage_t;
@@ -334,7 +334,7 @@ typedef struct ecs_entity_info_t {
     uint32_t commit_count;
 } ecs_entity_info_t;
 
-/** A type describing a unit of work to be executed by a worker thread. */ 
+/** A type describing a unit of work to be executed by a worker thread. */
 typedef struct ecs_job_t {
     ecs_entity_t system;          /* System handle */
     EcsColSystem *system_data;    /* System to run */
@@ -343,7 +343,7 @@ typedef struct ecs_job_t {
 } ecs_job_t;
 
 /** A type desribing a worker thread. When a system is invoked by a worker
- * thread, it receives a pointer to an ecs_thread_t instead of a pointer to an 
+ * thread, it receives a pointer to an ecs_thread_t instead of a pointer to an
  * ecs_world_t (provided by the ecs_rows_t type). When this ecs_thread_t is passed down
  * into the flecs API, the API functions are able to tell whether this is an
  * ecs_thread_t or an ecs_world_t by looking at the 'magic' number. This allows the
@@ -368,16 +368,16 @@ struct ecs_world {
 
     /* -- Column systems -- */
 
-    ecs_vector_t *on_load_systems;  
-    ecs_vector_t *post_load_systems;  
-    ecs_vector_t *pre_update_systems;  
-    ecs_vector_t *on_update_systems;   
-    ecs_vector_t *on_validate_systems; 
-    ecs_vector_t *post_update_systems; 
-    ecs_vector_t *pre_store_systems; 
-    ecs_vector_t *on_store_systems;   
-    ecs_vector_t *on_demand_systems;  
-    ecs_vector_t *inactive_systems;   
+    ecs_vector_t *on_load_systems;
+    ecs_vector_t *post_load_systems;
+    ecs_vector_t *pre_update_systems;
+    ecs_vector_t *on_update_systems;
+    ecs_vector_t *on_validate_systems;
+    ecs_vector_t *post_update_systems;
+    ecs_vector_t *pre_store_systems;
+    ecs_vector_t *on_store_systems;
+    ecs_vector_t *on_demand_systems;
+    ecs_vector_t *inactive_systems;
 
 
     /* -- Row systems -- */
@@ -463,7 +463,7 @@ struct ecs_world {
     bool should_quit;             /* Did a system signal that app should quit */
     bool should_match;            /* Should tablea be rematched */
     bool should_resolve;          /* If a table reallocd, resolve system refs */
-}; 
+};
 
 
 /* Parameters for various array types */

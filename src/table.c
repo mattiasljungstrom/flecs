@@ -12,7 +12,7 @@ void activate_table(
         ecs_system_activate_table(world, system, table, activate);
     } else {
         ecs_vector_t *systems = table->frame_systems;
-        
+
         if (systems) {
             ecs_entity_t *buffer = ecs_vector_first(systems);
             uint32_t i, count = ecs_vector_count(systems);
@@ -58,7 +58,7 @@ ecs_table_column_t* new_columns(
             table->flags |= EcsTableIsPrefab;
         }
     }
-    
+
     return result;
 }
 
@@ -102,7 +102,7 @@ void ecs_table_deinit(
     uint32_t count = ecs_vector_count(table->columns[0].data);
     if (count) {
         ecs_notify(
-            world, &world->main_stage, world->type_sys_remove_index, 
+            world, &world->main_stage, world->type_sys_remove_index,
             table->type, table, table->columns, 0, count);
     }
 }
@@ -112,7 +112,7 @@ void ecs_table_free_columns(
     ecs_table_t *table)
 {
     uint32_t i, column_count = ecs_vector_count(table->type);
-    
+
     for (i = 0; i < column_count + 1; i ++) {
         ecs_vector_free(table->columns[i].data);
         table->columns[i].data = NULL;
@@ -176,7 +176,7 @@ uint32_t ecs_table_insert(
             void *old_vector = columns[i].data;
 
             ecs_vector_add(&columns[i].data, &params);
-            
+
             if (old_vector != columns[i].data) {
                 reallocd = true;
             }
@@ -217,7 +217,7 @@ void ecs_table_delete(
     ecs_assert(count != 0, ECS_INTERNAL_ERROR, NULL);
 
     count --;
-    
+
     ecs_assert(index <= count, ECS_INTERNAL_ERROR, NULL);
 
     uint32_t column_last = ecs_vector_count(table->type) + 1;
@@ -255,7 +255,7 @@ void ecs_table_delete(
             }
         }
     }
-    
+
     if (!world->in_progress && !count) {
         activate_table(world, table, 0, false);
     }
@@ -342,7 +342,7 @@ int16_t ecs_table_dim(
     return 0;
 }
 
-uint64_t ecs_table_count(
+uint32_t ecs_table_count(
     ecs_table_t *table)
 {
     return ecs_vector_count(table->columns[0].data);
@@ -356,7 +356,7 @@ void ecs_table_swap(
     uint32_t row_2,
     ecs_row_t *row_ptr_1,
     ecs_row_t *row_ptr_2)
-{    
+{
     if (row_1 == row_2) {
         return;
     }
@@ -382,7 +382,7 @@ void ecs_table_swap(
 
     /* Swap columns */
     uint32_t i, column_count = ecs_vector_count(table->type);
-    
+
     for (i = 0; i < column_count; i ++) {
         void *data = ecs_vector_first(columns[i + 1].data);
         uint32_t size = columns[i + 1].size;
@@ -426,7 +426,7 @@ void ecs_table_move_back_and_swap(
 
     /* Move back and swap columns */
     uint32_t column_count = ecs_vector_count(table->type);
-    
+
     for (i = 0; i < column_count; i ++) {
         void *data = ecs_vector_first(columns[i + 1].data);
         uint32_t size = columns[i + 1].size;
@@ -512,8 +512,8 @@ void ecs_table_merge(
             size = sizeof(ecs_entity_t);
         }
 
-        if ((new_component & ECS_ENTITY_FLAGS_MASK) || 
-            (old_component & ECS_ENTITY_FLAGS_MASK)) 
+        if ((new_component & ECS_ENTITY_FLAGS_MASK) ||
+            (old_component & ECS_ENTITY_FLAGS_MASK))
         {
             break;
         }
@@ -526,7 +526,7 @@ void ecs_table_merge(
                 }
                 new_columns[i_new].data = old_columns[i_old].data;
                 old_columns[i_old].data = NULL;
-            
+
             /* If the new table is not empty, copy the contents from the
              * smallest into the largest vector. */
             } else {
@@ -535,7 +535,7 @@ void ecs_table_merge(
 
                 ecs_vector_params_t params = {.element_size = size};
                 ecs_vector_set_count(&dst, &params, new_count + old_count);
-                
+
                 void *dst_ptr = ecs_vector_first(dst);
                 void *src_ptr = ecs_vector_first(src);
 
@@ -546,7 +546,7 @@ void ecs_table_merge(
                 old_columns[i_old].data = NULL;
                 new_columns[i_new].data = dst;
             }
-            
+
             i_new ++;
             i_old ++;
         } else if (new_component < old_component) {

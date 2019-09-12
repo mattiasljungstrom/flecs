@@ -23,17 +23,17 @@ typedef uintptr_t ecs_os_dl_t;
 typedef void (*ecs_os_proc_t)(void);
 
 /* Memory management */
-typedef 
+typedef
 void* (*ecs_os_api_malloc_t)(
     size_t size);
 
-typedef 
+typedef
 void (*ecs_os_api_free_t)(
     void *ptr);
 
 typedef
 void* (*ecs_os_api_realloc_t)(
-    void *ptr, 
+    void *ptr,
     size_t size);
 
 typedef
@@ -97,7 +97,7 @@ void (*ecs_os_api_cond_wait_t)(
     ecs_os_mutex_t mutex);
 
 
-typedef 
+typedef
 void (*ecs_os_api_sleep_t)(
     uint32_t sec,
     uint32_t nanosec);
