@@ -1112,7 +1112,7 @@ uint32_t update_entity_index(
     ecs_type_t type,
     ecs_table_t *table,
     ecs_table_column_t *columns,
-    uint32_t result,
+    ecs_entity_t result,
     ecs_table_data_t *data)
 {
     bool has_unset = false, tested_for_unset = false;
@@ -2054,7 +2054,7 @@ ecs_entity_t ecs_new_component(
     }
 
     result = _ecs_new(world, world->t_component);
-    ecs_set(world, result, EcsComponent, {.size = size});
+    ecs_set(world, result, EcsComponent, {.size = (uint32_t)size});
     ecs_set(world, result, EcsId, {id});
 
     return result;
