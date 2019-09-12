@@ -110,7 +110,7 @@ ecs_map_t *alloc_map(
     };
 
     result->nodes = ecs_vector_new(&result->node_params, ECS_MAP_INITIAL_NODE_COUNT);
-    
+
     return result;
 }
 
@@ -146,9 +146,9 @@ void set_node_data(
     if (!data) {
         return;
     }
-    
+
     void *node_data = get_node_data(node);
-    if (data != node_data) { 
+    if (data != node_data) {
         if (data) {
             memcpy(node_data, data, data_size(map));
         } else {
@@ -411,12 +411,12 @@ bool _ecs_map_has(
     if (!map) {
         return false;
     }
-    
+
     if (!map->count) {
         return false;
     }
 
-    ecs_assert(!value_out || (ecs_map_data_size(map) == size), ECS_INVALID_PARAMETER, NULL); 
+    ecs_assert(!value_out || (ecs_map_data_size(map) == size), ECS_INVALID_PARAMETER, NULL);
 
     uint32_t *bucket = get_bucket(map, key_hash);
     if (*bucket) {

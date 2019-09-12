@@ -72,7 +72,7 @@ bool _ecs_map_has(
     uint32_t size);
 
 #define ecs_map_has(map, key, data)\
-    _ecs_map_has(map, key, data, sizeof(*(data)))
+    _ecs_map_has(map, key, (void*)data, sizeof(*(data)))
 
 FLECS_EXPORT
 void* ecs_map_get_ptr(
@@ -108,7 +108,7 @@ void* ecs_map_next_w_size(
     *(uint64_t*)ecs_map_next_w_size(it, sizeof(uint64_t))
 
 #define ecs_map_nextptr(it)\
-    *(void**)ecs_map_next_w_size(it, sizeof(void*))    
+    *(void**)ecs_map_next_w_size(it, sizeof(void*))
 
 FLECS_EXPORT
 void* ecs_map_next_w_key(
@@ -128,7 +128,7 @@ void* ecs_map_next_w_key_w_size(
     *(uint64_t*)ecs_map_next_w_key_w_size(it, key_out, sizeof(uint64_t))
 
 #define ecs_map_nextptr_w_key(it, key_out)\
-    *(void**)ecs_map_next_w_key_w_size(it, key_out, sizeof(void*))   
+    *(void**)ecs_map_next_w_key_w_size(it, key_out, sizeof(void*))
 
 #ifdef __cplusplus
 }
