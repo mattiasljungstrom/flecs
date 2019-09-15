@@ -52,6 +52,7 @@ jobs:
     - name: Windows VS2017 bake
       run: |
         git clone https://github.com/SanderMertens/bake
+        cd bake
         cd build-Windows
         call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && nmake
         cd ..
