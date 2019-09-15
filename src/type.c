@@ -1065,11 +1065,11 @@ char* ecs_type_to_expr(
         if (id) {
             str = *id;
         } else {
-            int h_int = h;
+            int h_int = (int)h;
             sprintf(buf, "%u", h_int);
             str = buf;
         }
-        len = strlen(str);
+        len = (uint32_t)strlen(str);
         dst = ecs_vector_addn(&chbuf, &char_arr_params, len);
         memcpy(dst, str, len);
     }

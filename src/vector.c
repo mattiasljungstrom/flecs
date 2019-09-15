@@ -112,7 +112,7 @@ uint32_t ecs_vector_remove(
     uint32_t count = array->count;
     uint32_t element_size = params->element_size;
     void *buffer = ARRAY_BUFFER(array);
-    uint32_t index = ((char*)elem - (char*)buffer) / element_size;
+    uint32_t index = (uint32_t)(((char*)elem - (char*)buffer) / element_size);
 
     if (index >= count) {
         return count;
@@ -301,7 +301,7 @@ uint32_t ecs_vector_get_index(
     ecs_assert(elem != NULL, ECS_INVALID_PARAMETER, NULL);
     uint32_t element_size = params->element_size;
     void *buffer = ARRAY_BUFFER(array);
-    return ((char*)elem - (char*)buffer) / element_size;
+    return (uint32_t)(((char*)elem - (char*)buffer) / element_size);
 }
 
 void* ecs_vector_last(

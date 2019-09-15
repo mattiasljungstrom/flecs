@@ -249,7 +249,7 @@ void set_system_stats(
     }
 
     sstats->signature = system_ptr->signature;
-    sstats->time_spent = system_ptr->time_spent;
+    sstats->time_spent = (float)system_ptr->time_spent;
     sstats->enabled = system_ptr->enabled;
     system_ptr->time_spent = 0;
 }
@@ -261,7 +261,7 @@ int compare_sysstats(
 {
     const EcsSystemStats *s1 = e1;
     const EcsSystemStats *s2 = e2;
-    return s1->handle - s2->handle;
+    return (int)(s1->handle - s2->handle);
 }
 
 static

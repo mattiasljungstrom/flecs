@@ -227,8 +227,8 @@ bool ecs_os_dbg_enabled(void) {
 void ecs_os_gettime(ecs_time_t *timeOut)
 {
     uint64_t now = ecs_os_time_now();
-    timeOut->sec = now / 1000000000;
-    timeOut->nanosec = now - timeOut->sec * 1000000000;
+    timeOut->sec = (int32_t)(now / 1000000000);
+    timeOut->nanosec = (uint32_t)(now - timeOut->sec * 1000000000);
 }
 
 void ecs_os_set_api_defaults(void)

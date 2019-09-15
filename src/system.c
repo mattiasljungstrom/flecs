@@ -431,7 +431,7 @@ ecs_type_t ecs_notify_row_system(
 
             /* Update the column vector with the entry to the ref vector */
             ref_id ++;
-            columns[i] = -ref_id;
+            columns[i] = -(int32_t)ref_id;
         }
     }
 

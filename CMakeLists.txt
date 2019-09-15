@@ -7,6 +7,10 @@ file(GLOB flecs_SRC "src/*.c")
 include_directories("include")
 
 add_compile_definitions(FLECS_IMPL)
+if (MSVC)
+    # remove warnings about strncpy and strdup
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_DEPRECATE)
+endif()
 
 add_library(flecs_static STATIC ${flecs_SRC})
 add_library(flecs_shared SHARED ${flecs_SRC})

@@ -48,7 +48,7 @@ int compare_handle(
     const void *p1,
     const void *p2)
 {
-    return *(ecs_entity_t*)p1 - *(ecs_entity_t*)p2;
+    return (int)(*(ecs_entity_t*)p1 - *(ecs_entity_t*)p2);
 }
 
 static
@@ -142,7 +142,7 @@ void bootstrap_component(
     ecs_table_t *table,
     ecs_entity_t entity,
     const char *id,
-    size_t size)
+    uint32_t size)
 {
     ecs_stage_t *stage = &world->main_stage;
 
@@ -761,8 +761,8 @@ ecs_world_t* ecs_init_w_args(
             );
 
             ARG(0, "fps", 
-                ecs_set_target_fps(world, atoi(argv[i + 1]));
-                world->arg_fps = world->target_fps; 
+                ecs_set_target_fps(world, (float)atoi(argv[i + 1]));
+                world->arg_fps = (int)world->target_fps;
                 i ++);
 
             ARG(0, "admin", 
@@ -1085,13 +1085,13 @@ float start_measure_frame(
         ecs_time_t t = world->frame_start;
         do {
             if (world->frame_start.sec) {
-                delta_time = ecs_time_measure(&t);
+                delta_time = (float)ecs_time_measure(&t);
             } else {
                 ecs_time_measure(&t);
                 if (world->target_fps) {
-                    delta_time = 1.0 / world->target_fps;
+                    delta_time = (float)(1.0 / world->target_fps);
                 } else {
-                    delta_time = 1.0 / 60.0; /* Best guess */
+                    delta_time = (float)(1.0 / 60.0); /* Best guess */
                 }
             }
         
@@ -1112,12 +1112,12 @@ void stop_measure_frame(
     if (world->measure_frame_time) {
         ecs_time_t t = world->frame_start;
         double frame_time = ecs_time_measure(&t);
-        world->frame_time += frame_time;
+        world->frame_time += (float)frame_time;
 
         /* Sleep if processing faster than target FPS */
         float target_fps = world->target_fps;
         if (target_fps) {
-            float sleep = (1.0 / target_fps) - delta_time + world->fps_sleep;
+            float sleep = (float)((1.0 / target_fps) - delta_time + world->fps_sleep);
 
             if (sleep > 0.01) {
                 ecs_sleepf(sleep);
@@ -1231,7 +1231,7 @@ void ecs_merge(
     }
 
     if (measure_frame_time) {
-        world->merge_time += ecs_time_measure(&t_start);
+        world->merge_time += (float)ecs_time_measure(&t_start);
     }
 
     world->is_merging = false;
@@ -1515,5 +1515,5 @@ uint32_t ecs_get_threads(
 uint32_t ecs_get_target_fps(
     ecs_world_t *world)
 {
-    return world->target_fps;
+    return (uint32_t) world->target_fps;
 }

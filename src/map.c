@@ -13,13 +13,13 @@ struct ecs_map_t {
     uint32_t *buckets;      /* Array of buckets */
     ecs_vector_t *nodes;    /* Array with memory for map nodes */
     ecs_vector_params_t node_params; /* Parameters for node vector */
-    size_t bucket_count;    /* number of buckets */
+    uint32_t bucket_count;  /* number of buckets */
     uint32_t count;         /* number of elements */
     uint32_t min;           /* minimum number of elements */
 };
 
 static
-size_t data_size(
+uint32_t data_size(
     ecs_map_t *map)
 {
     return map->node_params.element_size - sizeof(ecs_map_node_t);
@@ -120,7 +120,7 @@ uint32_t next_bucket(
     ecs_map_t *map,
     uint32_t start_index)
 {
-    size_t i;
+    uint32_t i;
     for (i = start_index; i < map->bucket_count; i ++) {
         if (map->buckets[i]) {
             break;
@@ -269,13 +269,13 @@ ecs_map_t* ecs_map_new(
     if (!data_size) {
         data_size = sizeof(uint64_t);
     }
-    return alloc_map((float)size / FLECS_LOAD_FACTOR, data_size);
+    return alloc_map((uint32_t)((float)size / FLECS_LOAD_FACTOR), data_size);
 }
 
 void ecs_map_clear(
     ecs_map_t *map)
 {
-    uint32_t target_size = (float)map->count / FLECS_LOAD_FACTOR;
+    uint32_t target_size = (uint32_t)((float)map->count / FLECS_LOAD_FACTOR);
 
     if (target_size < map->min) {
         target_size = map->min;
@@ -449,7 +449,7 @@ uint32_t ecs_map_set_size(
     uint32_t size)
 {
     uint32_t result = ecs_vector_set_size(&map->nodes, &map->node_params, size);
-    resize_map(map, size / FLECS_LOAD_FACTOR);
+    resize_map(map, (uint32_t)((float)size / FLECS_LOAD_FACTOR));
     return result;
 }
 
