@@ -52,7 +52,9 @@ jobs:
     - name: Windows VS2017 bake
       run: |
         git clone https://github.com/SanderMertens/bake
-        make -C bake/build-$(uname)
-        bake/bake setup
+        cd build-Windows
+        nmake
+        cd ..
+        bake setup
         bake
         bake test
